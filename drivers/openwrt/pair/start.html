@@ -1,0 +1,84 @@
+<script>
+Homey.setTitle( __('OpenWRT router pairing page') );
+
+function testSettings () {
+	// variables
+	var username = document.getElementById( 'username' );
+	var password = document.getElementById( 'password' );
+	var host = document.getElementById( 'host' );
+	var port = document.getElementById( 'port' );
+	var saveButton = document.getElementById( 'savebutton' );
+
+	username.disabled = true;
+	password.disabled = true;
+	host.disabled = true;
+	port.disabled = true;
+	saveButton.disabled = true;
+
+	if (username != '' && password != '' && host != '' && port !='') {
+		var sshconfig = {
+			host: host.value,
+			username: username.value,
+			port: Number(port.value),
+			password: password.value
+		};
+		Homey.emit( 'save', sshconfig, function( message, result ){
+			if (result)
+			{
+				Homey.alert('Success. Model detected: ' + message);
+				setTimeout(function () {
+					Homey.done();
+					saveButton.disabled = false;
+					username.disabled = false;
+					password.disabled = false;
+					host.disabled = false;
+					port.disabled = false;
+				}, 5000);
+			}
+			else
+			{
+				Homey.alert('Error: ' + message);
+				saveButton.disabled = false;
+				saveButton.disabled = false;
+				username.disabled = false;
+				password.disabled = false;
+				host.disabled = false;
+				port.disabled = false;
+			}
+		});
+	} else {
+		Homey.alert('Not all information specified', 'error');
+		saveButton.disabled = false;
+		inputTbl.disabled = false;
+	}
+}
+</script>
+
+    <p>enter OpenWRT router information</p>
+
+		<table class="pairSettings">
+			<tr>
+				<td style="width:100px;">username</td>
+				<td><input id="username" type="text" value="admin" placeholder="e.g. admin"/></td>
+			</tr>
+			<tr>
+				<td style="width:100px;">password</td>
+				<td><input id="password" type="password" value="" /></td>
+			</tr>
+			<tr>
+				<td style="width:100px;">address</td>
+				<td><input id="host" type="text" value="192.168.1.1" placeholder="device ip or domain address"/></td>
+			</tr>
+			<tr>
+				<td style="width:100px;">SSH port</td>
+				<td><input id="port" type="number" value="22" min=0 max=65535 /></td>
+			</tr>
+		</table>
+
+		<p>
+		&nbsp;
+	  </p>
+
+<fieldset>
+    <button class="button" id="savebutton"  onclick="testSettings()">Save</button>
+</fieldset>
